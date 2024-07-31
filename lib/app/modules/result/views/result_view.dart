@@ -1,14 +1,14 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-
 import 'package:get/get.dart';
 import 'package:satua/app/core/theme_manager/assets_manager.dart';
 import 'package:satua/app/core/theme_manager/text_style_manager.dart';
-
 import '../controllers/result_controller.dart';
 
 class ResultView extends GetView<ResultController> {
   const ResultView({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Obx(() => Scaffold(
@@ -24,37 +24,83 @@ class ResultView extends GetView<ResultController> {
               'Imagine your story',
               style: TextStyleManager.titleGreen(),
             ),
+            actions: [
+              IconButton(
+                icon: const Icon(CupertinoIcons.ellipsis_vertical),
+                onPressed: () {
+                  // Actions when this icon is pressed
+                },
+              ),
+            ],
           ),
           body: controller.result.value != ''
               ? SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(controller.title.value),
-                      const SizedBox(
-                        height: 10,
-                      ),
+                      const SizedBox(height: 10),
                       Text(controller.result.value),
-                      const SizedBox(
-                        height: 45,
-                      ),
+                      const SizedBox(height: 20),
+                      Obx(() {
+                        return Column(
+                          children:
+                              List.generate(controller.items.length, (index) {
+                            final item = controller.items[index];
+                            return Row(
+                              children: [
+                                Checkbox(
+                                  value: item['isChecked'] as bool,
+                                  onChanged: (bool? value) {
+                                    controller.toggleItemChecked(
+                                        index, value ?? false);
+                                  },
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    item['title'] as String,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors
+                                          .black, // Adjust color as needed
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }),
+                        );
+                      }),
+                      const SizedBox(height: 40),
                       ElevatedButton(
-                        onPressed: controller.goToStoryList,
+                        onPressed: () {
+                          if (controller.areAllItemsChecked()) {
+                            // Proceed if all items are checked
+                            controller.goToStoryList();
+                          } else {
+                            // Show a message if not all items are checked
+                            Get.snackbar(
+                              'Validation Error',
+                              'Please check all items before saving.',
+                              snackPosition: SnackPosition.BOTTOM,
+                              backgroundColor: Colors.red,
+                              colorText: Colors.white,
+                            );
+                          }
+                        },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              const Color(0xFFFFDE00), // Your background color
+                          backgroundColor: const Color(0xFFFFDE00),
                           textStyle: const TextStyle(
-                              color: Color.fromARGB(
-                                  255, 255, 255, 255)), // Text color
+                            color: Color.fromARGB(255, 255, 255, 255),
+                          ),
                           shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(8.0), // Border radius
+                            borderRadius: BorderRadius.circular(8.0),
                           ),
                           padding: const EdgeInsets.symmetric(
                               vertical: 16.0, horizontal: 32.0),
-                          // Makes the button as wide as the parent container:
-                          minimumSize: const Size.fromHeight(
-                              50), // Adjust height if needed
+                          minimumSize: const Size.fromHeight(50),
                         ),
                         child: const Text(
                           'Save Story!',
@@ -66,7 +112,6 @@ class ResultView extends GetView<ResultController> {
                       ),
                     ],
                   ),
-                   
                 )
               : Center(
                   child: SizedBox(
@@ -82,27 +127,21 @@ class ResultView extends GetView<ResultController> {
                               height: 150,
                               child: Image.asset(
                                   '${AssetManager.imagePath}/awan-hijau.png')),
-                          const SizedBox(
-                            height: 30,
-                          ),
+                          const SizedBox(height: 30),
                           Text(
                             'Hang on a second!',
                             style: TextStyleManager.titleGreen(),
                           ),
-                          const SizedBox(
-                            height: 30,
-                          ),
+                          const SizedBox(height: 30),
                           SizedBox(
                             width: 250,
                             child: Text(
-                              'Satua is now generating your bed\ntime story...',
+                              'Satua is now generating your bedtime story...',
                               textAlign: TextAlign.center,
                               style: TextStyleManager.medium12(fontSize: 14),
                             ),
                           ),
-                          const SizedBox(
-                            height: 200,
-                          )
+                          const SizedBox(height: 200)
                         ],
                       )
                           .animate(onPlay: (controller) => controller.repeat())
@@ -115,7 +154,6 @@ class ResultView extends GetView<ResultController> {
                     ),
                   ),
                 ),
-             
         ));
   }
 }

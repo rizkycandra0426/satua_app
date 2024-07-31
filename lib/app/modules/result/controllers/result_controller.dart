@@ -9,7 +9,9 @@ class ResultController extends GetxController {
   bool load = true;
   final RxString userPrompt = ''.obs;
 
-  final count = 0.obs;
+  // Daftar item sebagai RxList<Map>
+  final RxList<Map<String, dynamic>> items = <Map<String, dynamic>>[].obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -27,9 +29,11 @@ class ResultController extends GetxController {
   void onClose() {
     super.onClose();
   }
-  void goToStoryList(){
+
+  void goToStoryList() {
     Get.toNamed(Routes.STORY_LIST, parameters: {});
   }
+
   Future<String> generateStory(String userPrompt) async {
     try {
       String content = '';
@@ -38,10 +42,13 @@ class ResultController extends GetxController {
       }).catchError((e) => print(e));
 
       // Extract the title (assuming the title is the first line)
-      title!.value = content.split('\n')[0];
+      title.value = content.split('\n')[0];
 
       // Extract the story content (assuming the rest is the story)
-      final story = content.substring(title!.value.length + 1).trim();
+      final story = content.substring(title.value.length + 1).trim();
+
+      // Initialize items if necessary
+      items.addAll(_generateSampleItems()); // Example method to generate initial items
 
       return story;
     } catch (e) {
@@ -51,6 +58,23 @@ class ResultController extends GetxController {
       return ''; // Handle errors and return an empty string
     }
   }
-  
-  
+
+  // Method to check if all items are checked
+  bool areAllItemsChecked() {
+    return items.every((item) => item['isChecked'] as bool);
+  }
+
+  // Method to generate sample items (for demonstration purposes)
+  List<Map<String, dynamic>> _generateSampleItems() {
+    return [
+      {'title': 'Sudah Selesai Membaca', 'isChecked': false},
+     
+    ];
+  }
+
+  // Method to toggle item checked state
+  void toggleItemChecked(int index, bool value) {
+    items[index]['isChecked'] = value;
+    items.refresh();
+  }
 }

@@ -207,7 +207,7 @@ class HomeView extends GetView<HomeController> {
                                           ),
                                           Text(
                                             "Always up for a challenge, Sukerti volunteered to save the day. Armed with a courage as big as his heart, he set off to find the dragon's lair. Along the way, ",
-                                            style: TextStyle(fontSize: 12),
+                                            style: TextStyle(fontSize: 16),
                                             maxLines: 4,
                                           )
                                         ],
